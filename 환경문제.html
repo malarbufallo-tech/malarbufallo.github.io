@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>환경 & 가전제품 퀴즈 (60문제)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9fafd;
+      margin: 0; padding: 0;
+    }
+    #container {
+      max-width: 620px;
+      margin: 32px auto;
+      background: #fff;
+      padding: 32px 28px;
+      border-radius: 14px;
+      box-shadow: 0 5px 18px #8caad3;
+    }
+    h1 {
+      color: #2a4d69;
+      margin-top: 0;
+      font-weight: 700;
+      font-size: 1.9em;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .desc {
+      margin: 18px 0 30px 0;
+      line-height: 1.6em;
+      font-size: 1.15em;
+      text-align: center;
+      color: #355c7d;
+    }
+    .question {
+      font-size: 1.25em;
+      margin-bottom: 18px;
+      font-weight: 700;
+      color: #33475b;
+    }
+    .options button {
+      display: block;
+      margin: 10px auto;
+      padding: 14px 18px;
+      width: 95%;
+      max-width: 500px;
+      font-size: 1.1em;
+      background: #d7e5fb;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #2a3a5f;
+      transition: background 0.25s, color 0.25s;
+      text-align: left;
+    }
+    .options button:hover {
+      background: #b1c8f9;
+      color: #12224e;
+    }
+    #score {
+      margin-top: 20px;
+      color: #1f3a14;
+      font-size: 1.15em;
+      font-weight: 700;
+      text-align: center;
+    }
+    #result,
+    #end-message {
+      font-weight: 700;
+      margin-top: 22px;
+      font-size: 1.13em;
+      text-align: center;
+      color: #475068;
+    }
+    #next-btn {
+      margin: 28px auto;
+      padding: 15px 36px;
+      font-size: 1.15em;
+      background-color: #2a4d69;
+      border: none;
+      color: white;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      display: block;
+      max-width: 320px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+      display: none;
+    }
+    #next-btn:hover {
+      background-color: #21405a;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>환경 & 가전제품 퀴즈</h1>
+    <p class="desc">
+      학생들을 위한 친숙하지만 도전적인 환경 퀴즈입니다.<br/>
+      60문제 중 무작위 15문제를 출제하며, 각 문제는 4지선다와 해설이 포함되어 있습니다.
+    </p>
+    <div id="quiz">
+      <div id="progress"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="result"></div>
+      <button id="next-btn" onclick="nextQuestion()">다음 문제</button>
+      <div id="score"></div>
+      <div id="end-message"></div>
+    </div>
+  </div>
+<script>
+const fullQuizData = [
+  {q:"냉장고에서 쓰는 냉매가 환경에 끼치는 영향으로 맞는 것은?", opts:["지구 온난화 촉진","맑은 공기 증가","물을 깨끗하게 함","소음 감소"], ans:0, exp:"냉매 누출 시 지구 온난화를 가속합니다."},
+  {q:"1등급 에너지 효율 제품의 특징은?", opts:["전기 덜 써서 환경에 좋음","무조건 싸다","제일 크다","가장 무겁다"], ans:0, exp:"1등급 제품은 적은 에너지로 작동합니다."},
+  {q:"LED 조명이 백열등보다 좋은 점은?", opts:["전기를 덜 쓰고 오래 쓴다","색이 예쁘다","더 밝다","값이 싸다"], ans:0, exp:"LED는 에너지 효율과 수명이 깁니다."},
+  {q:"전자레인지가 음식을 빨리 데우는 비결은?", opts:["음식 속 물 분자 진동을 이용","바람으로 데움","뜨거운 불 사용","전자 흐름 이용"], ans:0, exp:"전자파가 물 분자를 진동시켜 열을 생성합니다."},
+  {q:"장시간 가전제품을 안 쓸 때 좋은 습관은?", opts:["플러그 뽑기","켜 놓기","에너지 절약 모드 유지","커버 씌우기"], ans:0, exp:"플러그를 뽑으면 불필요한 전력 소비를 막을 수 있습니다."},
+  {q:"에어컨 사용 시 온실가스 주 배출 원인은?", opts:["냉매 누출","전기 사용","물 사용","소음"], ans:0, exp:"냉매 누출이 큰 온실가스 배출 원인입니다."},
+  {q:"플라즈마 TV가 LCD보다 전기를 더 많이 쓰는 이유는?", opts:["화소별 방전 방식 때문","화면 크기","화면 해상도","디자인"], ans:0, exp:"플라즈마는 방전으로 빛을 내 전기를 많이 씁니다."},
+  {q:"대기전력을 줄이는 가장 좋은 방법은?", opts:["사용 안 할 때 플러그 뽑기","항상 켜두기","껐다 켜기 반복","대기모드 유지"], ans:0, exp:"플러그를 뽑는 것이 대기전력을 차단합니다."},
+  {q:"효율적 세탁을 위해 권장하는 행동은?", opts:["한꺼번에 많이 모아 세탁","자주 조금씩 세탁","뜨거운 물만 사용","건조기만 사용"], ans:0, exp:"한번에 많이 세탁하면 에너지와 물을 줄일 수 있습니다."},
+  {q:"태양광 가전제품이 일반 제품보다 좋은 점은?", opts:["탄소 배출 적음","가격 저렴","수명 짧음","크기 큼"], ans:0, exp:"재생에너지 사용으로 탄소 배출이 적습니다."},
+  {q:"전자제품 에너지 소비에서 가장 큰 비중은?", opts:["대기전력 낭비","사용시간","크기","무게"], ans:0, exp:"쓰지 않을 때도 대기전력이 많이 낭비됩니다."},
+  {q:"냉장고 문 자주 열면 무슨 일이 일어날까?", opts:["냉기 손실로 전기 더 쓴다","전기 절약","조용해짐","냉장 수명 늘어남"], ans:0, exp:"냉기가 빠져나가서 전기 소비가 증가합니다."},
+  {q:"환경 친화적 가전제품 구매 시 중요한 요소는?", opts:["에너지 효율 등급","브랜드","색상","크기"], ans:0, exp:"에너지 효율 등급은 환경에 큰 영향을 줍니다."},
+  {q:"가전제품을 오래 사용하지 않을 땐 어떻게 하는 게 최선일까?", opts:["플러그 완전 뽑기","전원 켜기","에너지 절약 모드","커버 씌우기"], ans:0, exp:"플러그를 빼면 완전 차단 가능해 전기 절약에 최고입니다."},
+  {q:"친환경 가전제품이 이산화탄소 배출을 줄이는 이유는?", opts:["전기 덜 쓰기 때문","크기 작음","안 씀","모든 부품 친환경"], ans:0, exp:"적은 전기사용으로 온실가스 배출이 줄어듭니다."},
+  {q:"가전제품 작업 동안 발생하는 온실가스 중 주된 기체는?", opts:["이산화탄소","수소","메탄","산소"], ans:0, exp:"주로 이산화탄소가 온실가스입니다."},
+  {q:"가족 수 증가가 가전제품 전기 사용에 미치는 영향은?", opts:["전력 증가","전력 감소","변화 없음","모름"], ans:0, exp:"사람이 많아지면 가전 사용량과 전력 소비가 늘어납니다."},
+  {q:"환경친화적 재료 사용이 환경에 주는 효과는?", opts:["오염 감소","가격 상승","내구성 저하","색상 변화"], ans:0, exp:"친환경 재료는 환경오염을 줄입니다."},
+  {q:"충전기 플러그를 뽑지 않으면 어떤 문제가 생기는가?", opts:["대기전력 낭비","충전 느림","손상 위험","과열"], ans:0, exp:"충전기를 뽑지 않으면 대기전력이 계속 소모됩니다."},
+  {q:"초절전 가전제품 사용시 기대 효과는?", opts:["전기요금 감소","디자인 개선","소음 감소","무게 감소"], ans:0, exp:"전력 소모를 줄여 비용과 탄소를 절감합니다."},
+  {q:"전자제품 폐기 시 환경에 가장 해로운 행위는?", opts:["배터리 무단 폐기","분리수거","재활용","기부"], ans:0, exp:"배터리는 유해물질로 무단 폐기가 위험합니다."},
+  {q:"전기 덜 쓰면서도 성능 좋은 제품 선별법은?", opts:["에너지효율 라벨 확인","가격 우선","브랜드 선호","크기 확인"], ans:0, exp:"에너지 라벨이 신뢰할 수 있습니다."},
+  {q:"가전 용량 적절히 맞추는 이유?", opts:["전력 낭비 방지","가격 절감","사용 시간 단축","디자인"], ans:0, exp:"적절한 용량은 효율적 소비를 돕습니다."},
+  {q:"냉장고 권장 온도는?", opts:["섭씨 3~5도","섭씨 0도 이하","섭씨 10도 이상","상관없음"], ans:0, exp:"3~5도가 신선도 및 에너지 절약에 적절합니다."},
+  {q:"가장 큰 에너지 절감 습관은?", opts:["완전 전원 차단","조명 밝기 조절","항상 에어컨 켬","빈번한 켜기"], ans:0, exp:"전원을 완전 해제하는 습관이 효과적입니다."},
+  {q:"냉매가 대표적으로 환경에 나쁜 영향은?", opts:["오존층 파괴","수질 오염","토양 오염","소음 공해"], ans:0, exp:"냉매는 특히 오존층 파괴에 악영향을 줍니다."},
+  {q:"효율적인 에어컨 사용법?", opts:["선풍기와 병행해 온도 조금 높게 설정","항상 낮은 온도 유지","문 열기","끊임없이 켜기"], ans:0, exp:"선풍기와 함께 쓰면 에너지 절약이 가능합니다."},
+  {q:"친환경 가전 선택 시 고려해야 할 점?", opts:["에너지 효율","크기","가격","디자인"], ans:0, exp:"에너지 효율이 환경에 가장 중요합니다."},
+  {q:"제품 수명이 길면 환경에 어떤 영향?", opts:["폐기물 감소","전력 증가","사용 늘어남","소음 증가"], ans:0, exp:"오래 사용할수록 버려지는 제품이 줄어듭니다."},
+  {q:"에너지 소비 줄이려면 어떻게 해야 하나?", opts:["불필요한 전원 끄기","24시간 켜두기","계속 재부팅","정기적 청소"], ans:0, exp:"사용하지 않을 땐 완전히 꺼야 전기를 아낄 수 있습니다."},
+  {q:"스마트홈 기술의 환경적 장점?", opts:["에너지 효율 향상","복잡성 증가","비용 상승","보안 위험"], ans:0, exp:"자동 제어로 에너지 낭비를 줄입니다."},
+  {q:"전자제품 대기전력이란?", opts:["꺼져있어도 소비되는 전력","최대 전력","최소 전력","사용 중 전력"], ans:0, exp:"대기전력은 꺼진 상태에서도 소모되는 전력입니다."},
+  {q:"전자레인지 효율적인 사용법?", opts:["적절한 시간만 가열","최대 시간 사용","자주 열어보기","항상 빈 그릇 가열"], ans:0, exp:"필요한 만큼만 가열해야 에너지 절약됩니다."},
+  {q:"친환경 전기제품 제조 시 중요한 점은?", opts:["재활용 가능한 자재 사용","최신 기술","디자인 혁신","빠른 생산"], ans:0, exp:"재활용 자재 활용이 환경 영향을 줄입니다."},
+  {q:"최적 세탁 방법은?", opts:["한번에 모아서 세탁","매일 조금씩 세탁","뜨거운 물만 사용","다림질"], ans:0, exp:"많이 모아 세탁해 물과 전기 낭비 줄이기."},
+  {q:"제품 폐기 시 올바른 행동?", opts:["분리 배출 및 재활용","일반 쓰레기 같이 버리기","삼키기","분실"], ans:0, exp:"적절한 분리배출은 환경 보호의 시작입니다."},
+  {q:"어떤 가전제품이 대기전력 가장 많이 사용?", opts:["TV","컴퓨터","냉장고","믹서기"], ans:0, exp:"TV가 대기전력 소비가 가장 많습니다."},
+  {q:"장시간 전자기기 사용하지 않을 때 가장 좋은 습관?", opts:["플러그 뽑기","절전모드 사용","계속 켜두기","건전지 빼기"], ans:0, exp:"플러그 분리가 에너지 절약 최선입니다."},
+  {q:"고효율 전구 쓰면 좋은 점?", opts:["전기 절약과 긴 수명","더 밝음","더 싸다","더 따뜻함"], ans:0, exp:"고효율 전구는 에너지와 비용을 줄여줍니다."},
+  {q:"재생 가능 에너지란 무엇인가?", opts:["태양광·풍력 등 자연에서 계속 발생하는 에너지","화석 연료","핵 발전","석탄"], ans:0, exp:"재생에너지는 무한히 사용 가능한 자원이랍니다."},
+  {q:"온수 사용 줄이는 이유?", opts:["에너지·물 절약","불편해서","비용 증가","기기 고장"], ans:0, exp:"적게 쓸수록 에너지와 자원이 절약됩니다."},
+  {q:"친환경 가전제품 사용 시 기대되는 효과?", opts:["탄소 배출 감소","전기요금 인상","소음 증가","제품 무게"], ans:0, exp:"탄소배출을 줄여 환경 보호에 기여합니다."},
+  {q:"환경 보호를 위한 가전제품 관리법?", opts:["주기적 청소와 점검","사용하지 않음","방치","과다 충전"], ans:0, exp:"관리 잘하면 수명 늘고 에너지 절약에 좋아요."},
+  {q:"스마트 가전이 에너지 효율 높은 이유는?", opts:["사용 패턴 분석 및 자동 제어","항상 최대 출력","수동 조작","복잡한 구조"], ans:0, exp:"스마트 기술로 불필요한 소비 줄입니다."},
+  {q:"가전제품에서 전력 소모를 줄이는 좋은 습관?", opts:["불필요 시 전원 끄기","항상 켜두기","자주 모니터링","물 사용"], ans:0, exp:"필요할 때만 사용해야 에너지 절약됩니다."},
+  {q:"냉장고 적정 온도?", opts:["섭씨 3~5도","영하 10도","10~15도","상관 없음"], ans:0, exp:"3~5도가 가장 효율적입니다."},
+  {q:"전기밥솥 효율적 사용법?", opts:["필요량만 요리","귀찮아서 자주 조리","오래 켜놓기","항상 최대량 조리"], ans:0, exp:"필요한 양만 조리해 에너지를 아낍니다."},
+  {q:"가전제품 구매 시 확인해야 하는 에너지 표시?", opts:["에너지소비효율등급","가격표","제조사","색상"], ans:0, exp:"에너지효율등급으로 제품 성능 파악 가능합니다."},
+  {q:"플러그 뽑지 않고 남은 대기전력은?", opts:["전기 낭비","보안 강화","성능 향상","불필요"], ans:0, exp:"사용하지 않을 땐 플러그를 뽑아야 전기 절약됩니다."},
+  {q:"가전제품 폐기 전 해야 할 일?", opts:["안전하게 분리수거","아무 데나 버리기","금고에 보관","불에 태우기"], ans:0, exp:"분리수거가 환경 오염 방지에 필수적입니다."},
+  {q:"친환경 전자제품은?", opts:["에너지효율 높고 재활용 잘 되는 제품","싸고 유행 제품","크고 무거운 제품","최신형일수록 친환경"], ans:0, exp:"효율성과 재활용성을 고려한 제품입니다."},
+  {q:"전자제품 전력 소모로 환경에 끼치는 영향?", opts:["이산화탄소 배출 증가","물 오염","토양 산성화","온도 하강"], ans:0, exp:"전기 생산과 사용에서 이산화탄소가 배출됩니다."},
+  {q:"건조기 사용 시 에너지 절약 팁?", opts:["자연건조 병행","계속 작동","사용량 늘리기","과열"], ans:0, exp:"자연건조와 병행하면 에너지를 줄일 수 있습니다."},
+  {q:"가전제품 수명 연장이 환경에 좋은 이유는?", opts:["쓰레기 감소","가격 상승","사용 시간 증가","제품 무게"], ans:0, exp:"오래 사용 시 폐기물 및 자원 낭비가 줄어듭니다."},
+  {q:"환경 보호 위해 피해야 할 가전제품 습관?", opts:["불필요한 대기전력 유지","절전기능 적극 활용","올바른 폐기","재활용"], ans:0, exp:"대기전력 유지가 전기 낭비 주요 원인입니다."},
+  {q:"전자레인지 내부 청소 이유?", opts:["효율적 작동","청소 중요하지 않음","제품 수명과 무관","세척 불가"], ans:0, exp:"깨끗한 기기일수록 효율이 높습니다."},
+  {q:"친환경 가전제품 이용 시 실천할 점?", opts:["절전모드 활용과 주기적 점검","상시 최대 출력","계속 켜두기","과도한 사용"], ans:0, exp:"적절한 사용이 친환경에 더욱 효과적입니다."},
+  {q:"플라스틱 재질 가전 부품의 환경 문제?", opts:["분해 어려움 및 미세플라스틱 발생","재사용 쉽다","무해","전기 절약"], ans:0, exp:"분해가 어려워 환경 오염원이 될 수 있습니다."},
+  {q:"가전제품의 성능과 전력 소모 관계는?", opts:["성능 높을수록 전력 소모 크다","성능과 무관","전력 적으면 성능 약하다","전력과 무관"], ans:0, exp:"대체로 성능 향상은 전력 소모 증가와 연결됩니다."},
+  {q:"가전제품 고장 시 환경 고려 행동?", opts:["수리 후 사용 연장","버리고 새 제품 구매","무시","일반 쓰레기 버려"], ans:0, exp:"수리하면 자원 낭비를 줄일 수 있습니다."},
+  {q:"실내 온도 적정 유지 이유?", opts:["에너지 절감과 쾌적함","인테리어","조명 영향","공기 오염"], ans:0, exp:"적정 온도 유지가 전력 절약과 건강에 좋습니다."},
+  {q:"에너지 절감 절전기능이란?", opts:["불필요 소비 줄이는 기능","출력 최대화","연속사용","사용시간 감소"], ans:0, exp:"절전기능은 전기 사용 최적화 방법입니다."},
+  {q:"정격 전력 초과 사용 위험은?", opts:["기기 과열과 화재 위험","성능 향상","전기 절약","내구성 증가"], ans:0, exp:"초과 전력 사용은 안전사고 유발할 수 있습니다."},
+  {q:"복합 가전제품의 에너지 절감 장점?", opts:["한 기기로 여러 기능 수행해 전력 절약","더 비쌈","복잡한 조작","무겁다"], ans:0, exp:"복합 기능은 필요한 기기 수를 줄여 전기 절약 효과가 있습니다."},
+  {q:"환경 문제 관련 가전제품 정책은?", opts:["에너지 효율 기준 강화","가격 인상","디자인 제한","본체 크기 규제"], ans:0, exp:"효율 기준 강화를 통해 에너지 소비를 줄이고 있습니다."}
+];
+function getRandomQuestions(arr, num) {
+  let shuffled = arr.slice().sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, num);
+}
+let quizData = getRandomQuestions(fullQuizData, 15);
+let current = 0;
+let score = 0;
+let answered = false;
+function showQuestion() {
+  document.getElementById("progress").innerText = `문제 ${current + 1} / ${quizData.length}`;
+  document.getElementById("question").innerText = quizData[current].q;
+  let optionsHTML = "";
+  quizData[current].opts.forEach((opt, idx) => {
+    // 숫자 1~4 붙여서 표시
+    optionsHTML += `<button onclick="answer(${idx})">${idx+1}. ${opt}</button>`;
+  });
+  document.getElementById("options").innerHTML = optionsHTML;
+  document.getElementById("result").innerText = "";
+  document.getElementById("score").innerText = `현재 점수: ${score} / ${quizData.length}`;
+  document.getElementById("end-message").innerText = "";
+  document.getElementById("next-btn").style.display = "none";
+  answered = false;
+}
+function answer(choice) {
+  if (answered) return;
+  answered = true;
+  if (choice === quizData[current].ans) {
+    document.getElementById("result").innerText = "정답! " + quizData[current].exp;
+    score++;
+  } else {
+    document.getElementById("result").innerText = "틀렸어요! " + quizData[current].exp;
+  }
+  document.getElementById("score").innerText = `현재 점수: ${score} / ${quizData.length}`;
+  document.querySelectorAll("#options button").forEach(btn => btn.disabled = true);
+  document.getElementById("next-btn").style.display = "block";
+}
+function nextQuestion() {
+  current++;
+  if (current < quizData.length) {
+    showQuestion();
+  } else {
+    document.getElementById("quiz").innerHTML = `<div id="end-message">
+      퀴즈가 끝났습니다!<br />총점: ${score} / ${quizData.length}<br />환경 보호 습관을 계속 실천해요!
+    </div>`;
+  }
+}
+showQuestion();
+</script>
+<button id="next-btn">다음 문제</button>
+</body>
+</html>
